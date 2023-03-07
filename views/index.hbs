@@ -1,0 +1,117 @@
+<div class="header">
+    <a class="center" href="/filemanager">FILEMANAGER</a>
+</div>
+
+<main>
+    <div class="sidebar">
+        <div class="btnS1" id="btnMkdir">
+            <p>NOWY FOLDER</p>
+        </div>
+        <div class="btnS1" id="btnTouch">
+            <p>NOWY PLIK TXT</p>
+        </div>
+        <div class="btnS1">
+            <form enctype="multipart/form-data" method="POST" action="/handleUpload">
+                <input type="file" multiple required name="imagetoupload">
+                <input type="submit">
+            </form>
+        </div>
+        <div class="btnS1" id="btnMv">
+            <p>ZMIEN NAZWE</p>
+        </div>
+    </div>
+
+    <div class="mainbox">
+        <h1>{{userpath}}</h1>
+
+        <div class="box folder">
+            <form action="/handleCd" method="post">
+                <input type="text" class="hidden" name="name" value="..">
+                <input type="image" class="icon" src="img/folder.png">
+            </form>
+            <p>..</p>
+        </div>
+
+        {{#each contextFolders}}
+        <div class="box folder">
+            <form action="/handleCd" method="post">
+                <input type="text" class="hidden" name="name" value="{{this}}">
+                <input type="image" class="icon" src="img/folder.png">
+            </form>
+            <p>
+                {{this}}
+            <form action="/handleDelete" method="post">
+                <input class="hidden" type="text" name="name" readonly="readonly" value="{{this}}">
+                <input class="hidden" type="text" name="type" readonly="readonly" value="folder">
+                <input class="submit" type="submit" value="DELETE">
+            </form>
+            </p>
+        </div>
+        {{/each}}
+
+        {{#each contextFiles}}
+        <div class="box file">
+            <a href="/showfile/{{this}}"><img class="icon" src="img/files.png"></a>
+            <p>
+                {{this}}
+            <form action="/handleDelete" method="post">
+                <input class="hidden" type="text" name="name" readonly="readonly" value="{{this}}">
+                <input class="hidden" type="text" name="type" readonly="readonly" value="file">
+                <input class="submit" type="submit" value="DELETE">
+            </form>
+            </p>
+        </div>
+        {{/each}}
+
+
+
+        {{!-- {{#each contextFiles}}
+        <form action="/handleDelete" method="POST">
+            <div class="box {{this.type}}">
+                <img class="icon" src="{{img}}">
+                <input class="submit" type="submit" value="REMOVE"><br>
+                <input class="tbFilename" type="text" name="name" value="{{this.name}}" readonly="readonly">
+                <input class="hidden" type="text" name="type" value="{{this.type}}" readonly="readonly">
+            </div>
+        </form>
+        {{/each}} --}}
+    </div>
+</main>
+
+<dialog id="dialMkdir">
+    <form action="/handleMkdir" method="post">
+        <p>Nowy folder</p>
+        <input type="text" name="tbNewFolder" id="tbNewFolder"><br>
+        <input type="submit" value="Dodaj">
+        <input type="button" id="btnClose1" value="Zamknij">
+    </form>
+</dialog>
+
+<dialog id="dialTouch">
+    <form action="/handleTouch" method="post">
+        <p>Nowy plik tekstowy</p>
+        <input type="text" name="tbNewTextFile" id="tbNewTextFile">
+        <select name="extention" id="extention">
+            <option value="txt">txt</option>
+            <option value="json">json</option>
+            <option value="css">css</option>
+            <option value="html">html</option>
+            <option value="js">js</option>
+        </select>
+        <input type="submit" value="Dodaj">
+        <input type="button" id="btnClose2" value="Zamknij">
+    </form>
+</dialog>
+
+<dialog id="dialMv">
+    <form action="/handleMv" method="post">
+        <p>Zmien nazwe folderu (.)</p>
+        <input type="text" name="tbRename" id="tbRename"><br>
+        <input type="submit" value="Zmien">
+        <input type="button" id="btnClose3" value="Zamknij">
+    </form>
+</dialog>
+
+
+<script src="js/dialog.js"></script>
+<script src="js/delete.js"></script>

@@ -1,0 +1,85 @@
+<div class="header">
+   <a class="center" href="/filemanager">FILEMANAGER</a>
+</div>
+
+<main>
+   <div id="menu">
+      {{#each filters}}
+      <div class="btnS2">{{this}}</div>
+      <img src="{{fileUrl}}" class="filterimg">
+      {{/each}}
+   </div>
+
+   <div id="imgEdit">
+      <h1>{{fileName}}</h1>
+      <div class="btnS3" id="btnDisplayMenu">menu</div>
+      <img style="max-width: 40vw;" src="{{fileUrl}}">
+   </div>
+</main>
+
+<script>
+   let btnDisplayMenu = document.getElementById("btnDisplayMenu")
+   let menu = document.getElementById("menu")
+   let imgEdit = document.getElementById("imgEdit")
+
+   let myPath = "{{ fileUrl }}"
+   console.log(myPath)
+   console.log(typeof (myPath))
+
+   let menuState = "closed"
+
+   btnDisplayMenu.addEventListener("click", function () {
+      if (menuState == "closed") {
+         menuState = "progress"
+
+         menu.style.border = "5px solid black"
+         menu.style.margin = "1em"
+         menu.style.padding = "1em"
+
+         let count = 0;
+
+         const intervalOpen = setInterval(() => {
+            menu.style.flexGrow = count / 100
+            count++;
+
+            if (count === 100) {
+               menuState = "opened"
+               document.querySelectorAll("#menu > *").forEach(item => {
+                  console.log("qeqe")
+                  item.style.display = "block"
+               })
+               document.querySelectorAll(".filterimg").forEach(item => {
+                  item.src = myPath
+               })
+               clearInterval(intervalOpen);
+            }
+         }, 10)
+      }
+
+      if (menuState == "opened") {
+         menuState = "progress"
+
+         document.querySelectorAll("#menu > *").forEach(item => {
+            console.log("qeqe")
+            item.style.display = "none"
+         })
+
+         let count = 100;
+
+         const intervalClosed = setInterval(() => {
+            menu.style.flexGrow = count / 100
+            count--
+
+            if (count === 0) {
+               menuState = "closed"
+
+               menu.style.flexGrow = null
+               menu.style.border = null
+               menu.style.margin = null
+               menu.style.padding = null
+               clearInterval(intervalClosed)
+            }
+         }, 10)
+      }
+   })
+</script>

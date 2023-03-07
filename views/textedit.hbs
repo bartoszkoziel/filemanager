@@ -1,0 +1,114 @@
+<div class="header">
+   <a class="center" href="/filemanager">FILEMANAGER</a>
+</div>
+
+<main>
+   <div class="sidebar">
+      <div class="btnS2" id="btnFontLarger">
+         <p>Font+</p>
+      </div>
+      <div class="btnS2" id="btnFontSmaller">
+         <p>Font-</p>
+      </div>
+      <div class="btnS2" id="btnThemeChange">
+         <p>Colors</p>
+      </div>
+      <div class="btnS2" id="btnMvFile">
+         <p>Zmien nazwe</p>
+      </div>
+      {{!-- <div class="btnS2">
+         <p>Podgląd pliku</p>
+      </div> --}}
+   </div>
+
+   <div class="mainbox">
+      <form action="/handleSaveFile" method="post">
+         <h1 class="margin1em">{{fileName}}</h1>
+         <input class="submit" type="submit" value="ZAPISZ PLIK">
+         <div class="editArea">
+            <div id="rowsNum">
+               {{#each fileLines}}
+               <p>{{this}}</p>
+               {{/each}}
+            </div>
+            <textarea name="taFile" id="taFile" class="textarea taFile" cols="32">{{fileContent}}</textarea>
+         </div>
+         <input readonly="readonly" class="hidden" type="text" name="fileName" value="{{fileName}}">
+      </form>
+   </div>
+</main>
+
+<dialog id="dialMv">
+    <form action="/handleMvFile" method="post">
+        <p>Zmien nazwe pliku ({{fileName}})</p>
+        <input type="text" name="tbOldName" readonly="readonly" value="{{fileName}}" class="hidden">
+        <input type="text" name="tbNewName" id="tbNewName"><br>
+        <input type="submit" value="Zmien">
+        <input type="button" id="btnClose4" value="Zamknij">
+    </form>
+</dialog>
+
+<script type="text/javascript">
+   // entery
+   let textarea = document.getElementById("taFile")
+   let rowsNum = document.getElementById("rowsNum")
+
+   textarea.onkeyup = function () {
+      let enters = textarea.value.split("\n").length
+      rowsNum.innerHTML = ""
+      for (let i = 0; i < enters; i++) {
+         rowsNum.innerHTML = rowsNum.innerHTML + "<p>" + (i + 1) + "</p>"
+      }
+   }
+   // dialog
+   let btnMv = document.getElementById("btnMvFile")
+   let dialogMv = document.getElementById("dialMv")
+   let dialogMvClose = document.getElementById("btnClose4")
+
+   btnMv.addEventListener("click", function(){
+      dialogMv.showModal()
+   })
+
+   dialogMvClose.addEventListener("click", function() {
+      dialogMv.close()
+   })
+
+
+
+   // themes
+   function fetchPost(pom) {
+      const body = JSON.stringify({ pom: pom }) // body czyli przesyłane na serwer dane
+
+      const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
+
+      fetch("/handleFontChange", { method: "post", body, headers }) // fetch
+         .then(response => response.json())
+         .then(
+            function (data) {
+               console.log(data)
+               textarea.style.fontSize = data.fontsize
+               rowsNum.style.fontSize = data.fontsize
+
+               if (data.theme == "light") {
+                  textarea.style.backgroundColor = "#666666"
+                  rowsNum.style.backgroundColor = "#666666"
+
+                  textarea.style.color = "#eeeeee"
+                  rowsNum.style.color = "#eeeeee"
+               } else if (data.theme == "dark") {
+                  textarea.style.backgroundColor = "#209CEC"
+                  rowsNum.style.backgroundColor = "#209CEC"
+
+                  textarea.style.color = "#111111"
+                  rowsNum.style.color = "#111111"
+               }
+            }
+         )
+   }
+
+   document.getElementById("btnFontLarger").onclick = function () { fetchPost(1) }
+   document.getElementById("btnFontSmaller").onclick = function () { fetchPost(-1) }
+   document.getElementById("btnThemeChange").onclick = function () { fetchPost(2) }
+   window.addEventListener("load", (e) => { fetchPost(0) })
+
+</script>
